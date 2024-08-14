@@ -1,4 +1,4 @@
-package com.test.codingchallengefullstack;
+package com.test.userservice;
 
 import org.springframework.boot.test.context.TestConfiguration;
 
