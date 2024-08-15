@@ -1,6 +1,7 @@
-package com.test.userservice.model;
+package com.test.operationservice.model;
 
-import com.test.userservice.enums.UserStatus;
+import com.test.operationservice.enums.OperationType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,23 +17,20 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "users")
+@Table(name = "operations")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Operation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.ORDINAL)
-    private UserStatus status;
+    @Column(name = "operation_type")
+    private OperationType operationType;
 
-    private String username;
-
-    private String password;
-
-    private BigDecimal balance;
+    private BigDecimal cost;
 }

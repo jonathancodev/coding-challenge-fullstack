@@ -10,3 +10,13 @@ services:
     volumes:
       - ./data/mysql-user:/var/lib/mysql
       - ./docker/mysql-user/init.sql:/docker-entrypoint-initdb.d/init.sql
+  mysql-operation:
+    image: mysql:8.3.0
+    container_name: mysql-operation
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./data/mysql-operation:/var/lib/mysql
+      - ./docker/mysql-operation/init.sql:/docker-entrypoint-initdb.d/init.sql
