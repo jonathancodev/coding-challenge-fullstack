@@ -13,8 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -34,5 +32,5 @@ public class User {
 
     private String password;
 
-    private BigDecimal balance;
+    private Double balance;
 }

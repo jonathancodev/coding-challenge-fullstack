@@ -1,7 +1,7 @@
 package com.test.operationservice.controller;
 
 import com.test.operationservice.model.Operation;
-import com.test.operationservice.service.OperationService;
+import com.test.operationservice.service.impl.OperationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

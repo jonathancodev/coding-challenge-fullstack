@@ -14,8 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "operations")
 @Getter
@@ -32,5 +30,5 @@ public class Operation {
     @Column(name = "operation_type")
     private OperationType operationType;
 
-    private BigDecimal cost;
+    private Double cost;
 }

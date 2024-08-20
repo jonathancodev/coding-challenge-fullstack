@@ -1,4 +1,4 @@
-package com.test.operationservice.service;
+package com.test.operationservice.service.impl;
 
 import com.test.operationservice.model.Operation;
 import com.test.operationservice.repository.OperationRepository;
