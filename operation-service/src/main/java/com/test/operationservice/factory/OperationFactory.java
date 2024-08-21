@@ -1,4 +1,4 @@
-package com.test.operationservice.factories;
+package com.test.operationservice.factory;
 
 import com.test.operationservice.enums.OperationType;
 

@@ -1,8 +1,8 @@
-package com.test.operationservice.factories.impl;
+package com.test.operationservice.factory.impl;
 
 import com.test.operationservice.enums.OperationType;
 import com.test.operationservice.service.CalculatorOperation;
-import com.test.operationservice.factories.OperationFactory;
+import com.test.operationservice.factory.OperationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -20,9 +20,8 @@ public class DivisionOperationService implements CalculatorOperation {
     }
 
     @Override
-    public double getCost() {
+    public Operation getDbData() {
         return operationRepository.findByOperationType(getOperationType())
-                .map(Operation::getCost)
                 .orElseThrow(() -> new IllegalArgumentException("Cost not found for operation: " + getOperationType()));
     }
 
