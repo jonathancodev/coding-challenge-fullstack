@@ -1,6 +1,6 @@
-package com.test.apigateway.dto;
+package com.test.operationservice.dto;
 
-import com.test.apigateway.enums.UserStatus;
+import com.test.operationservice.enums.UserStatus;
 
 public record UserResponse(Long id, String username, String password, UserStatus status, Double balance) {
 }

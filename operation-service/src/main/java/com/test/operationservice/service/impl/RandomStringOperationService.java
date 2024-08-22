@@ -9,19 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class RandomStringOperationService implements StringOperation {
-    private final OperationRepository operationRepository;
 
     @Override
     public String generate() {
         return "";
-    }
-
-    @Override
-    public Operation getDbData() {
-        return operationRepository.findByOperationType(getOperationType())
-                .orElseThrow(() -> new IllegalArgumentException("Cost not found for operation: " + getOperationType()));
     }
 
     @Override

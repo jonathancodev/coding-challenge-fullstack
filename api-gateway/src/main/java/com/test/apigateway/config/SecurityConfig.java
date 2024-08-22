@@ -2,6 +2,7 @@ package com.test.apigateway.config;
 
 import com.test.apigateway.client.UserClient;
 import com.test.apigateway.filter.JwtFilter;
+import com.test.apigateway.filter.UsernameHeaderFilter;
 import com.test.apigateway.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

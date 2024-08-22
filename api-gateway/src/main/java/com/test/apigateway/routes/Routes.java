@@ -1,5 +1,6 @@
 package com.test.apigateway.routes;
 
+import com.test.apigateway.filter.UsernameHeaderFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
 import java.net.URI;
@@ -27,6 +29,7 @@ public class Routes {
     public RouterFunction<ServerResponse> userServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
                 .route(RequestPredicates.path("/api/users"), HandlerFunctions.http(userServiceUrl))
+                .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("userServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
@@ -34,8 +37,9 @@ public class Routes {
 
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
-        return GatewayRouterFunctions.route("operation_service")
+        return GatewayRouterFunctions.route("user_service")
                 .route(RequestPredicates.path("/api/operations"), HandlerFunctions.http(operationServiceUrl))
+                .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("operationServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
