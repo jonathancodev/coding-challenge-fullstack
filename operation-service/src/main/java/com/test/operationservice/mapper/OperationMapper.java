@@ -14,6 +14,4 @@ public interface OperationMapper {
     Operation toEntity(OperationResponse operationResponse);
 
     List<OperationResponse> toDTOList(List<Operation> operations);
-
-    List<Operation> toEntityList(List<OperationResponse> operationResponses);
 }

@@ -2,7 +2,6 @@ package com.test.userservice.service;
 
 import com.test.userservice.dto.UserResponse;
 import com.test.userservice.mapper.UserMapper;
-import com.test.userservice.model.User;
 import com.test.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

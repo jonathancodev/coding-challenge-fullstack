@@ -2,7 +2,7 @@ package com.test.operationservice.controller;
 
 import com.test.operationservice.dto.OperationRequest;
 import com.test.operationservice.dto.OperationResponse;
-import com.test.operationservice.model.Operation;
+import com.test.operationservice.dto.ResultOperationResponse;
 import com.test.operationservice.service.impl.OperationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class OperationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OperationResponse execute(@RequestHeader("X-Username") String username, @RequestBody OperationRequest operationRequest) {
+    public ResultOperationResponse execute(@RequestHeader("X-Username") String username, @RequestBody OperationRequest operationRequest) {
         return operationService.execute(username, operationRequest);
     }
 }

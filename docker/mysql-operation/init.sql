@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS operations (
 
 CREATE TABLE IF NOT EXISTS records (
     id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    transaction_id VARCHAR(255) NOT NULL,
     operation_id bigint(20) NOT NULL,
     user_id bigint(20) NOT NULL,
     amount DECIMAL(19, 2) NOT NULL,
