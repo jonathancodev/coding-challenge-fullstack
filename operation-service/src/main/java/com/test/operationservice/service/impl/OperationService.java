@@ -8,6 +8,7 @@ import com.test.operationservice.dto.RecordResponse;
 import com.test.operationservice.dto.ResultOperationResponse;
 import com.test.operationservice.dto.UserResponse;
 import com.test.operationservice.enums.OperationType;
+import com.test.operationservice.enums.RecordStatus;
 import com.test.operationservice.enums.UserStatus;
 import com.test.operationservice.factory.impl.CalculatorOperationFactory;
 import com.test.operationservice.factory.impl.StringOperationFactory;
@@ -65,6 +66,8 @@ public class OperationService {
         }
 
         CreateRecordRequest createRecordRequest = CreateRecordRequest.builder()
+                .transactionId(operationRequest.transactionId())
+                .status(RecordStatus.ACTIVE)
                 .operation(operation)
                 .userId(user.id())
                 .amount(operation.getCost())
