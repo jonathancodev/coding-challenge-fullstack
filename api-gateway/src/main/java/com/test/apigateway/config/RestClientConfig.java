@@ -22,7 +22,7 @@ public class RestClientConfig {
     private String userServiceUrl;
 
     @Bean
-    public UserClient inventoryClient() {
+    public UserClient userClient() {
         RestClient restClient = RestClient.builder()
                 .baseUrl(userServiceUrl)
                 .requestFactory(getClientRequestFactory())

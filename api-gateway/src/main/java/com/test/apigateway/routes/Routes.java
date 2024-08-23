@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
-import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 
 import java.net.URI;
@@ -28,7 +27,7 @@ public class Routes {
     @Bean
     public RouterFunction<ServerResponse> userServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
-                .route(RequestPredicates.path("/api/users"), HandlerFunctions.http(userServiceUrl))
+                .route(RequestPredicates.path("/api/v1/users"), HandlerFunctions.http(userServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("userServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
@@ -38,7 +37,7 @@ public class Routes {
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
-                .route(RequestPredicates.path("/api/operations"), HandlerFunctions.http(operationServiceUrl))
+                .route(RequestPredicates.path("/api/v1/operations"), HandlerFunctions.http(operationServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("operationServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))

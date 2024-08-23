@@ -1,5 +1,6 @@
 package com.test.operationservice.config;
 
+import com.test.operationservice.client.RandomClient;
 import com.test.operationservice.client.UserClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +22,11 @@ public class RestClientConfig {
     @Value("${user.service.url}")
     private String userServiceUrl;
 
+    @Value("${random.url}")
+    private String randomUrl;
+
     @Bean
-    public UserClient inventoryClient() {
+    public UserClient userClient() {
         RestClient restClient = RestClient.builder()
                 .baseUrl(userServiceUrl)
                 .requestFactory(getClientRequestFactory())
@@ -30,6 +34,17 @@ public class RestClientConfig {
         var restClientAdapter = RestClientAdapter.create(restClient);
         var httpServiceProxyFactory = HttpServiceProxyFactory.builderFor(restClientAdapter).build();
         return httpServiceProxyFactory.createClient(UserClient.class);
+    }
+
+    @Bean
+    public RandomClient randomClient() {
+        RestClient restClient = RestClient.builder()
+                .baseUrl(randomUrl)
+                .requestFactory(getClientRequestFactory())
+                .build();
+        var restClientAdapter = RestClientAdapter.create(restClient);
+        var httpServiceProxyFactory = HttpServiceProxyFactory.builderFor(restClientAdapter).build();
+        return httpServiceProxyFactory.createClient(RandomClient.class);
     }
 
     private ClientHttpRequestFactory getClientRequestFactory() {

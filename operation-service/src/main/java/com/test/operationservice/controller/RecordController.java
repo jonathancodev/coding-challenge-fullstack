@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/records")
+@RequestMapping("/api/v1/records")
 @RequiredArgsConstructor
 @Slf4j
 public class RecordController {

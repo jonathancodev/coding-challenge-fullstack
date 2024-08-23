@@ -56,13 +56,14 @@ public class OperationService {
 
         Operation operation = operationRepository.findByOperationType(operationRequest.operationType()).orElseThrow(() -> new IllegalArgumentException("Operation not found"));
         userValidation(user, userBalance, operation.getCost());
-        String operationResponse = null;
+        String operationResponse;
 
         if (operationRequest.operationType() != OperationType.RANDOM_STRING) {
             CalculatorOperation calculatorOperation = calculatorOperationFactory.getOperation(operationRequest.operationType());
             operationResponse = String.valueOf(calculatorOperation.calculate(operationRequest.operands()));
         } else {
             StringOperation stringOperation = stringOperationFactory.getOperation(operationRequest.operationType());
+            operationResponse = stringOperation.generate();
         }
 
         CreateRecordRequest createRecordRequest = CreateRecordRequest.builder()
