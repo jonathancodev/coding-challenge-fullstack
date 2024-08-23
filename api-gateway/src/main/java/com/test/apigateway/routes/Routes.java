@@ -36,7 +36,7 @@ public class Routes {
 
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
-        return GatewayRouterFunctions.route("user_service")
+        return GatewayRouterFunctions.route("opeartion_service")
                 .route(RequestPredicates.path("/api/v1/operations"), HandlerFunctions.http(operationServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("operationServiceCircuitBreaker",
