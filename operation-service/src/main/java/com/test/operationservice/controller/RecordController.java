@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,9 +44,9 @@ public class RecordController {
         return recordService.search(paginationRecordRequest);
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestHeader("X-Username") String username, @PathVariable Long id) {
-        recordService.delete(username, id);
+    public void logicalDelete(@RequestHeader("X-Username") String username, @PathVariable Long id) {
+        recordService.logicalDelete(username, id);
     }
 }

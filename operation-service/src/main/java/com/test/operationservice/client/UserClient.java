@@ -11,7 +11,7 @@ import org.springframework.web.service.annotation.GetExchange;
 public interface UserClient {
     Logger log = LoggerFactory.getLogger(UserClient.class);
 
-    @GetExchange("/api/users")
+    @GetExchange("/api/v1/users")
     @CircuitBreaker(name = "users-find-by-username", fallbackMethod = "fallbackMethod")
     @Retry(name = "users-find-by-username")
     UserResponse findByUsername(@RequestParam String username);

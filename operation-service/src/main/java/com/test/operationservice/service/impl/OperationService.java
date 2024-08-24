@@ -19,10 +19,13 @@ import com.test.operationservice.service.CalculatorOperation;
 import com.test.operationservice.service.StringOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,9 @@ public class OperationService {
     private final StringOperationFactory stringOperationFactory;
     private final UserClient userClient;
     private final RecordService recordService;
+    private final MessageSource messageSource;
+
+    private final Set<String> activeTransactions = ConcurrentHashMap.newKeySet();
 
     @Value("${default.user.balance}")
     private Double defaultUserBalance;
@@ -43,18 +49,20 @@ public class OperationService {
 
     @Transactional
     public ResultOperationResponse execute(String username, OperationRequest operationRequest) {
-        RecordResponse recordResponse = recordService.findByTransactionId(operationRequest.transactionId());
-
-        if (recordResponse != null) return ResultOperationResponse.builder().result(recordResponse.operationResponse()).build();
+        //TODO Idempotency: we can check if transaction is already started in server memory,
+        // however it has to store and check into a memory DB(Redis), when we have many replicas of the backend
+        if (!activeTransactions.add(operationRequest.transactionId())) {
+            throw new IllegalStateException(messageSource.getMessage("transaction.already.started", null, null));
+        }
 
         var user = userClient.findByUsername(username);
-        if (user == null) throw new IllegalArgumentException("User not found");
+        if (user == null) throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
 
         var userBalance = defaultUserBalance;
         RecordResponse lastRecord = recordService.findLastRecordByUserId(user.id());
         if (lastRecord != null) userBalance = lastRecord.userBalance();
 
-        Operation operation = operationRepository.findByOperationType(operationRequest.operationType()).orElseThrow(() -> new IllegalArgumentException("Operation not found"));
+        Operation operation = operationRepository.findByOperationType(operationRequest.operationType()).orElseThrow(() -> new IllegalArgumentException(messageSource.getMessage("operation.not.found", null, null)));
         userValidation(user, userBalance, operation.getCost());
         String operationResponse;
 
@@ -83,9 +91,9 @@ public class OperationService {
 
     private void userValidation(UserResponse user, double userBalance, double cost) {
         if (user.status() == UserStatus.INACTIVE) {
-            throw new IllegalArgumentException("User is inactive");
+            throw new IllegalArgumentException(messageSource.getMessage("user.inactive", null, null));
         } else if (userBalance < cost) {
-            throw new IllegalArgumentException("Insufficient balance");
+            throw new IllegalArgumentException(messageSource.getMessage("user.insufficient.balance", null, null));
         }
     }
 }

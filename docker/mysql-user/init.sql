@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS users (
 ) engine=InnoDB;
 
 INSERT INTO users (username, password, status) VALUES ('admin', '$2a$10$IcKfAJBXt3YKLxE.mBZluuMH5SaqYVHqhEqmY7m06F31k5nmOG8J2', 1);
+INSERT INTO users (username, password, status) VALUES ('other_admin', '$2a$10$IcKfAJBXt3YKLxE.mBZluuMH5SaqYVHqhEqmY7m06F31k5nmOG8J2', 1);

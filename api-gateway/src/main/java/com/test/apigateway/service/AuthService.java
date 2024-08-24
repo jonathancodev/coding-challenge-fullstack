@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ public class AuthService {
 
     private final PasswordService passwordService;
     private final UserClient userClient;
+    private final MessageSource messageSource;
 
     @Value("${security.jwt.token.secret}")
     private String SECRET_KEY;
@@ -23,11 +25,11 @@ public class AuthService {
         var user = userClient.findByUsername(username);
 
         if (user == null) {
-            return null;
+            throw new IllegalArgumentException(messageSource.getMessage("auth.wrong.user.password", null, null));
         }
 
         if (!passwordService.matches(password, user.password())) {
-            return null;
+            throw new IllegalArgumentException(messageSource.getMessage("auth.wrong.user.password", null, null));
         }
 
         return Jwts.builder()

@@ -9,6 +9,7 @@ import com.test.operationservice.mapper.RecordMapper;
 import com.test.operationservice.model.Record;
 import com.test.operationservice.repository.RecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final RecordMapper recordMapper;
     private final UserClient userClient;
+    private final MessageSource messageSource;
 
     @Transactional
     public RecordResponse create(CreateRecordRequest createRecordRequest) {
@@ -33,17 +35,13 @@ public class RecordService {
     }
 
     @Transactional
-    public void delete(String username, Long id) {
-        Record record = recordRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Record not found"));
+    public void logicalDelete(String username, Long id) {
+        Record record = recordRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(messageSource.getMessage("record.not.found", null, null)));
         var user = userClient.findByUsername(username);
-        if (user == null) throw new IllegalArgumentException("User not found");
-        if (!record.getUserId().equals(user.id())) throw new IllegalArgumentException("Record does not belong to user");
+        if (user == null) throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
+        if (!record.getUserId().equals(user.id())) throw new IllegalArgumentException(messageSource.getMessage("record.wrong.user", null, null));
         record.setStatus(RecordStatus.INACTIVE);
         recordRepository.save(record);
-    }
-
-    public RecordResponse findByTransactionId(String transactionId) {
-        return recordMapper.toDTO(recordRepository.findFirstByTransactionIdOrderByDateDesc(transactionId).orElse(null));
     }
 
     public RecordResponse findLastRecordByUserId(Long userId) {

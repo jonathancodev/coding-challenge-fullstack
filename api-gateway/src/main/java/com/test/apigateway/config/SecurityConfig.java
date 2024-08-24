@@ -1,8 +1,6 @@
 package com.test.apigateway.config;
 
-import com.test.apigateway.client.UserClient;
 import com.test.apigateway.filter.JwtFilter;
-import com.test.apigateway.filter.UsernameHeaderFilter;
 import com.test.apigateway.service.AuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +29,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtFilter(authService), UsernamePasswordAuthenticationFilter.class);;
