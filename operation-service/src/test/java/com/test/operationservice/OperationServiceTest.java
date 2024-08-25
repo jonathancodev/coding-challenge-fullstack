@@ -14,14 +14,19 @@ import com.test.operationservice.factory.impl.StringOperationFactory;
 import com.test.operationservice.mapper.OperationMapper;
 import com.test.operationservice.model.Operation;
 import com.test.operationservice.repository.OperationRepository;
+import com.test.operationservice.service.impl.AdditionOperationService;
+import com.test.operationservice.service.impl.DivisionOperationService;
+import com.test.operationservice.service.impl.MultiplicationOperationService;
 import com.test.operationservice.service.impl.OperationService;
 import com.test.operationservice.service.impl.RecordService;
+import com.test.operationservice.service.impl.SquareRootOperationService;
+import com.test.operationservice.service.impl.SubtractionOperationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 
 import java.util.List;
@@ -37,7 +42,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class OperationServiceTest {
 
 	@InjectMocks
@@ -49,7 +54,7 @@ class OperationServiceTest {
 	@Mock
 	private OperationMapper operationMapper;
 
-	@Autowired
+	@Mock
 	private CalculatorOperationFactory calculatorOperationFactory;
 
 	@Mock
@@ -61,7 +66,7 @@ class OperationServiceTest {
 	@Mock
 	private RecordService recordService;
 
-	@Autowired
+	@Mock
 	private MessageSource messageSource;
 
 	@BeforeEach
@@ -143,6 +148,7 @@ class OperationServiceTest {
 
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new DivisionOperationService(messageSource));
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
@@ -161,6 +167,7 @@ class OperationServiceTest {
 
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new SquareRootOperationService(messageSource));
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () ->
@@ -181,6 +188,7 @@ class OperationServiceTest {
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new AdditionOperationService());
 		when(recordService.create(any(CreateRecordRequest.class))).thenReturn(null);
 
 		ResultOperationResponse result = operationService.execute(username, request);
@@ -202,6 +210,7 @@ class OperationServiceTest {
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new SubtractionOperationService());
 		when(recordService.create(any(CreateRecordRequest.class))).thenReturn(null);
 
 		ResultOperationResponse result = operationService.execute(username, request);
@@ -223,6 +232,7 @@ class OperationServiceTest {
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new MultiplicationOperationService());
 		when(recordService.create(any(CreateRecordRequest.class))).thenReturn(null);
 
 		ResultOperationResponse result = operationService.execute(username, request);
@@ -244,6 +254,7 @@ class OperationServiceTest {
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new DivisionOperationService(messageSource));
 		when(recordService.create(any(CreateRecordRequest.class))).thenReturn(null);
 
 		ResultOperationResponse result = operationService.execute(username, request);
@@ -265,6 +276,7 @@ class OperationServiceTest {
 		when(userClient.findByUsername(username)).thenReturn(userResponse);
 		when(recordService.findLastRecordByUserId(anyLong())).thenReturn(RecordResponse.builder().userBalance(50.0).build());
 		when(operationRepository.findByOperationType(any(OperationType.class))).thenReturn(Optional.of(operation));
+		when(calculatorOperationFactory.getOperation(any(OperationType.class))).thenReturn(new SquareRootOperationService(messageSource));
 		when(recordService.create(any(CreateRecordRequest.class))).thenReturn(null);
 
 		ResultOperationResponse result = operationService.execute(username, request);

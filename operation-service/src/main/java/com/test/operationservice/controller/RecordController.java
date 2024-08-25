@@ -3,6 +3,7 @@ package com.test.operationservice.controller;
 import com.test.operationservice.dto.PaginationRecordRequest;
 import com.test.operationservice.dto.RecordResponse;
 import com.test.operationservice.service.impl.RecordService;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,8 +28,8 @@ public class RecordController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<RecordResponse> search(
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "1") @Min(1) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
             @RequestParam(required = false, defaultValue = "DESC") String sortDirection,
             @RequestParam(required = false, defaultValue = "date") String sortBy,
             @RequestParam(required = false, defaultValue = "") String term
