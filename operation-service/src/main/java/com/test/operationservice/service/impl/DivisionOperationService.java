@@ -15,7 +15,7 @@ public class DivisionOperationService implements CalculatorOperation {
 
     @Override
     public double calculate(double... operands) {
-        return Arrays.stream(operands).reduce(0, (a, b) -> {
+        return Arrays.stream(operands, 1, operands.length).reduce(operands[0], (a, b) -> {
             if (b == 0) throw new IllegalArgumentException(messageSource.getMessage("operation.division.by.zero", null, null));
             return a / b;
         });

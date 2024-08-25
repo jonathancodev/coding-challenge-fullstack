@@ -2,6 +2,7 @@ package com.test.userservice.controller;
 
 import com.test.userservice.dto.UserResponse;
 import com.test.userservice.service.UserService;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse findByUsername(@RequestParam("username") String username) {
+    public UserResponse findByUsername(@RequestParam("username") @NotBlank String username) {
         return userService.findByUsername(username);
     }
 }

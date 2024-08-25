@@ -11,7 +11,7 @@ public class MultiplicationOperationService implements CalculatorOperation {
 
     @Override
     public double calculate(double... operands) {
-        return Arrays.stream(operands).reduce(0, (a, b) -> a * b);
+        return Arrays.stream(operands, 1, operands.length).reduce(operands[0], (a, b) -> a * b);
     }
 
     @Override
