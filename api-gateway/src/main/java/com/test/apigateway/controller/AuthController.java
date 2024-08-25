@@ -3,6 +3,7 @@ package com.test.apigateway.controller;
 import com.test.apigateway.dto.LoginRequest;
 import com.test.apigateway.dto.LoginResponse;
 import com.test.apigateway.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         String token = authService.login(loginRequest.username(), loginRequest.password());
         return ResponseEntity.ok(new LoginResponse(token));
     }

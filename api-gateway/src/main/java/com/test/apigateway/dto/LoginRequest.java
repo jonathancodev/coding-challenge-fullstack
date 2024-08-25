@@ -1,10 +1,10 @@
 package com.test.apigateway.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
-        @NotEmpty @Max(50) String username,
-        @NotEmpty @Max(255) String password
+        @NotEmpty @Size(max = 50) String username,
+        @NotEmpty @Size(max = 255) String password
 ) {
 }
