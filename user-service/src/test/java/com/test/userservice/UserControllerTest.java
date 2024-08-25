@@ -1,6 +1,5 @@
 package com.test.userservice;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.userservice.controller.UserController;
 import com.test.userservice.dto.UserResponse;
 import com.test.userservice.service.UserService;
@@ -13,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,8 +23,6 @@ public class UserControllerTest {
 
 	@MockBean
 	private UserService userService;
-
-	private ObjectMapper objectMapper;
 
 	@Test
 	void findByUsername() throws Exception {

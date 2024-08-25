@@ -52,7 +52,7 @@ class AuthControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{ \"password\": \"" + DEFAULT_PASSWORD + "\" }"))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value("username: must not be empty"));
+				.andExpect(jsonPath("$.message").value("username: must not be blank"));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class AuthControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{ \"username\": \"" + "\", \"password\": \"" + DEFAULT_PASSWORD + "\" }"))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value("username: must not be empty"));
+				.andExpect(jsonPath("$.message").value("username: must not be blank"));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class AuthControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{ \"username\": \"" + DEFAULT_USERNAME + "\" }"))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value("password: must not be empty"));
+				.andExpect(jsonPath("$.message").value("password: must not be blank"));
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class AuthControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{ \"username\": \"" + DEFAULT_USERNAME + "\", \"password\": \"" + "\" }"))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value("password: must not be empty"));
+				.andExpect(jsonPath("$.message").value("password: must not be blank"));
 	}
 
 	@Test
