@@ -16,8 +16,8 @@ public interface UserClient {
     @Retry(name = "users-find-by-username")
     UserResponse findByUsername(@RequestParam String username);
 
-    default boolean fallbackMethod(String username, Throwable throwable) {
+    default UserResponse fallbackMethod(String username, Throwable throwable) {
         log.info("Cannot get user for username {}, failure reason: {}", username, throwable.getMessage());
-        return false;
+        return UserResponse.builder().build();
     }
 }

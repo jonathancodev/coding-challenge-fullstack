@@ -43,8 +43,15 @@ public class OperationService {
     @Value("${default.user.balance}")
     private Double defaultUserBalance;
 
+    @Transactional(readOnly = true)
     public List<OperationResponse> findAll() {
-        return operationMapper.toDTOList(operationRepository.findAll());
+        List<Operation> operations = operationRepository.findAll();
+        return operations.stream().map(operation -> OperationResponse
+                .builder()
+                .id(operation.getId())
+                .operationType(operation.getOperationType())
+                .cost(operation.getCost())
+                .build()).toList();
     }
 
     @Transactional

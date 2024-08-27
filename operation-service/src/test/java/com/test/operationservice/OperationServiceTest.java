@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,7 +80,6 @@ class OperationServiceTest {
 		Operation operation = new Operation();
 		OperationResponse response = OperationResponse.builder().build();
 		when(operationRepository.findAll()).thenReturn(List.of(operation));
-		when(operationMapper.toDTOList(anyList())).thenReturn(List.of(response));
 
 		List<OperationResponse> result = operationService.findAll();
 

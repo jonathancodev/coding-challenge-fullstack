@@ -54,11 +54,25 @@ public class RecordService {
         recordRepository.save(record);
     }
 
+    @Transactional(readOnly = true)
     public RecordResponse findLastRecordByUserId(Long userId) {
-        return recordMapper.toDTO(recordRepository.findFirstByUserIdOrderByDateDesc(userId).orElse(null));
+        Record record = recordRepository.findFirstByUserIdOrderByDateDesc(userId).orElse(null);
+        if (record == null) return null;
+        return RecordResponse
+                .builder()
+                .id(record.getId())
+                .operationType(record.getOperation().getOperationType())
+                .userBalance(record.getUserBalance())
+                .amount(record.getOperation().getCost())
+                .operationResponse(record.getOperationResponse())
+                .date(record.getDate())
+                .build();
     }
 
-    public Page<RecordResponse> search(PaginationRecordRequest paginationRecordRequest) {
+    @Transactional(readOnly = true)
+    public Page<RecordResponse> search(String username, PaginationRecordRequest paginationRecordRequest) {
+        var user = userClient.findByUsername(username);
+        if (user == null) throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
         Pageable pageable = PageRequest.of(
                 paginationRecordRequest.page(),
                 paginationRecordRequest.size(),
@@ -66,7 +80,7 @@ public class RecordService {
                 paginationRecordRequest.sortBy()
         );
 
-        Page<Record> records = recordRepository.search(paginationRecordRequest.term(), pageable);
+        Page<Record> records = recordRepository.search(paginationRecordRequest.term(), user.id(), pageable);
 
         return records.map(record -> RecordResponse.builder()
                 .id(record.getId())

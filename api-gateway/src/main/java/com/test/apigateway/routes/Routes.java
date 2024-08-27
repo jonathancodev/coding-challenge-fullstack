@@ -25,13 +25,10 @@ public class Routes {
     @Value("${operation.service.url}")
     private String operationServiceUrl;
 
-    @Value("${record.service.url}")
-    private String recordServiceUrl;
-
     @Bean
     public RouterFunction<ServerResponse> userServiceRoute() {
         return GatewayRouterFunctions.route("user_service")
-                .route(RequestPredicates.path("/api/v1/users"), HandlerFunctions.http(userServiceUrl))
+                .route(RequestPredicates.path("/api/v1/users/**"), HandlerFunctions.http(userServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("userServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
@@ -39,21 +36,11 @@ public class Routes {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> orderServiceRoute() {
+    public RouterFunction<ServerResponse> operationServiceRoute() {
         return GatewayRouterFunctions.route("operation_service")
-                .route(RequestPredicates.path("/api/v1/operations"), HandlerFunctions.http(operationServiceUrl))
+                .route(RequestPredicates.path("/api/v1/operations/**"), HandlerFunctions.http(operationServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("operationServiceCircuitBreaker",
-                        URI.create("forward:/fallbackRoute")))
-                .build();
-    }
-
-    @Bean
-    public RouterFunction<ServerResponse> recordServiceRoute() {
-        return GatewayRouterFunctions.route("record_service")
-                .route(RequestPredicates.path("/api/v1/records"), HandlerFunctions.http(recordServiceUrl))
-                .filter(new UsernameHeaderFilter())
-                .filter(CircuitBreakerFilterFunctions.circuitBreaker("recordServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
     }

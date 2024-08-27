@@ -140,16 +140,17 @@ class RecordServiceTest {
 
 	@Test
 	void testFindLastRecordByUserId_Success() {
-		Record record = Record.builder().build();
-		RecordResponse recordResponse = RecordResponse.builder().build();
+		Record record = Record
+				.builder()
+				.operation(Operation.builder().operationType(OperationType.ADDITION).build())
+				.build();
+		RecordResponse recordResponse = RecordResponse.builder().operationType(record.getOperation().getOperationType()).build();
 		when(recordRepository.findFirstByUserIdOrderByDateDesc(1L)).thenReturn(Optional.of(record));
-		when(recordMapper.toDTO(record)).thenReturn(recordResponse);
 
 		RecordResponse result = recordService.findLastRecordByUserId(1L);
 
 		assertEquals(recordResponse, result);
 		verify(recordRepository).findFirstByUserIdOrderByDateDesc(1L);
-		verify(recordMapper).toDTO(record);
 	}
 
 	@Test
@@ -172,13 +173,15 @@ class RecordServiceTest {
 		Pageable pageable = PageRequest.of(paginationRecordRequest.page(), paginationRecordRequest.size(), Sort.Direction.fromString(paginationRecordRequest.sortDirection()), paginationRecordRequest.sortBy());
 		Page<Record> records = new PageImpl<>(List.of(record));
 
-		when(recordRepository.search(paginationRecordRequest.term(), pageable)).thenReturn(records);
+		when(recordRepository.search(paginationRecordRequest.term(), DEFAULT_USER_ID, pageable)).thenReturn(records);
+		UserResponse userResponse = UserResponse.builder().id(DEFAULT_USER_ID).username(DEFAULT_USERNAME).build();
+		when(userClient.findByUsername(DEFAULT_USERNAME)).thenReturn(userResponse);
 
-		Page<RecordResponse> result = recordService.search(paginationRecordRequest);
+		Page<RecordResponse> result = recordService.search(DEFAULT_USERNAME, paginationRecordRequest);
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals(recordResponse, result.getContent().get(0));
-		verify(recordRepository).search(paginationRecordRequest.term(), pageable);
+		verify(recordRepository).search(paginationRecordRequest.term(), DEFAULT_USER_ID, pageable);
 	}
 }
 
