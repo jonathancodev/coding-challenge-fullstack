@@ -21,8 +21,12 @@ public class Routes {
 
     @Value("${user.service.url}")
     private String userServiceUrl;
+
     @Value("${operation.service.url}")
     private String operationServiceUrl;
+
+    @Value("${record.service.url}")
+    private String recordServiceUrl;
 
     @Bean
     public RouterFunction<ServerResponse> userServiceRoute() {
@@ -36,10 +40,20 @@ public class Routes {
 
     @Bean
     public RouterFunction<ServerResponse> orderServiceRoute() {
-        return GatewayRouterFunctions.route("opeartion_service")
+        return GatewayRouterFunctions.route("operation_service")
                 .route(RequestPredicates.path("/api/v1/operations"), HandlerFunctions.http(operationServiceUrl))
                 .filter(new UsernameHeaderFilter())
                 .filter(CircuitBreakerFilterFunctions.circuitBreaker("operationServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> recordServiceRoute() {
+        return GatewayRouterFunctions.route("record_service")
+                .route(RequestPredicates.path("/api/v1/records"), HandlerFunctions.http(recordServiceUrl))
+                .filter(new UsernameHeaderFilter())
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("recordServiceCircuitBreaker",
                         URI.create("forward:/fallbackRoute")))
                 .build();
     }

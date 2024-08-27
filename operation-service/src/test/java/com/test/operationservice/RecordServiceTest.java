@@ -5,8 +5,10 @@ import com.test.operationservice.dto.CreateRecordRequest;
 import com.test.operationservice.dto.PaginationRecordRequest;
 import com.test.operationservice.dto.RecordResponse;
 import com.test.operationservice.dto.UserResponse;
+import com.test.operationservice.enums.OperationType;
 import com.test.operationservice.enums.RecordStatus;
 import com.test.operationservice.mapper.RecordMapper;
+import com.test.operationservice.model.Operation;
 import com.test.operationservice.model.Record;
 import com.test.operationservice.repository.RecordRepository;
 import com.test.operationservice.service.impl.RecordService;
@@ -30,6 +32,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,17 +68,16 @@ class RecordServiceTest {
 	void testCreate_Success() {
 		CreateRecordRequest createRecordRequest = CreateRecordRequest.builder().build();
 		Record record = Record.builder().build();
+		Record recordSaved = Record.builder().id(DEFAULT_RECORD_ID).build();
 		RecordResponse recordResponse = RecordResponse.builder().build();
-		when(recordMapper.toEntity(createRecordRequest)).thenReturn(record);
-		when(recordRepository.save(record)).thenReturn(record);
-		when(recordMapper.toDTO(record)).thenReturn(recordResponse);
+		doReturn(recordSaved).when(recordRepository).save(any(Record.class));
+		when(recordMapper.toDTO(recordSaved)).thenReturn(recordResponse);
 
 		RecordResponse result = recordService.create(createRecordRequest);
 
 		assertEquals(recordResponse, result);
-		verify(recordMapper).toEntity(createRecordRequest);
-		verify(recordRepository).save(record);
-		verify(recordMapper).toDTO(record);
+		verify(recordRepository).save(any(Record.class));
+		verify(recordMapper).toDTO(recordSaved);
 	}
 
 	@Test
@@ -161,22 +164,21 @@ class RecordServiceTest {
 
 	@Test
 	void testSearch_Success() {
-		Record record = Record.builder().id(DEFAULT_RECORD_ID).userId(DEFAULT_USER_ID).status(RecordStatus.ACTIVE).build();
-		RecordResponse recordResponse = RecordResponse.builder().build();
+		Operation operation = Operation.builder().operationType(OperationType.ADDITION).build();
+		Record record = Record.builder().id(DEFAULT_RECORD_ID).operation(operation).userId(DEFAULT_USER_ID).status(RecordStatus.ACTIVE).build();
+		RecordResponse recordResponse = RecordResponse.builder().id(DEFAULT_RECORD_ID).operationType(OperationType.ADDITION).build();
 		PaginationRecordRequest paginationRecordRequest = PaginationRecordRequest.builder()
 				.page(0).size(10).sortBy("date").sortDirection("desc").build();
 		Pageable pageable = PageRequest.of(paginationRecordRequest.page(), paginationRecordRequest.size(), Sort.Direction.fromString(paginationRecordRequest.sortDirection()), paginationRecordRequest.sortBy());
 		Page<Record> records = new PageImpl<>(List.of(record));
 
 		when(recordRepository.search(paginationRecordRequest.term(), pageable)).thenReturn(records);
-		when(recordMapper.toDTO(record)).thenReturn(recordResponse);
 
 		Page<RecordResponse> result = recordService.search(paginationRecordRequest);
 
 		assertEquals(1, result.getTotalElements());
 		assertEquals(recordResponse, result.getContent().get(0));
 		verify(recordRepository).search(paginationRecordRequest.term(), pageable);
-		verify(recordMapper).toDTO(record);
 	}
 }
 

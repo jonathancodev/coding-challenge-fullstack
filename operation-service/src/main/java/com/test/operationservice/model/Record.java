@@ -55,6 +55,6 @@ public class Record {
     @Column(nullable = false)
     private String operationResponse;
 
-    @Column(nullable = false)
+    @Column(name = "operation_date", nullable = false)
     private LocalDateTime date;
 }

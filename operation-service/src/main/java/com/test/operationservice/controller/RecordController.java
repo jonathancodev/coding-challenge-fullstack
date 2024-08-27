@@ -28,7 +28,7 @@ public class RecordController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<RecordResponse> search(
-            @RequestParam(required = false, defaultValue = "1") @Min(1) int page,
+            @RequestParam(required = false, defaultValue = "0") @Min(0) int page,
             @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
             @RequestParam(required = false, defaultValue = "DESC") String sortDirection,
             @RequestParam(required = false, defaultValue = "date") String sortBy,

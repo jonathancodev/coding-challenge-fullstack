@@ -29,7 +29,17 @@ public class RecordService {
 
     @Transactional
     public RecordResponse create(CreateRecordRequest createRecordRequest) {
-        Record record = recordMapper.toEntity(createRecordRequest);
+        Record record = Record
+                .builder()
+                .transactionId(createRecordRequest.transactionId())
+                .status(createRecordRequest.status())
+                .operation(createRecordRequest.operation())
+                .userId(createRecordRequest.userId())
+                .amount(createRecordRequest.amount())
+                .userBalance(createRecordRequest.userBalance())
+                .operationResponse(createRecordRequest.operationResponse())
+                .build();
+
         record.setDate(LocalDateTime.now());
         return recordMapper.toDTO(recordRepository.save(record));
     }
@@ -58,6 +68,14 @@ public class RecordService {
 
         Page<Record> records = recordRepository.search(paginationRecordRequest.term(), pageable);
 
-        return records.map(recordMapper::toDTO);
+        return records.map(record -> RecordResponse.builder()
+                .id(record.getId())
+                .operationType(record.getOperation().getOperationType())
+                .amount(record.getOperation().getCost())
+                .userBalance(record.getUserBalance())
+                .operationResponse(record.getOperationResponse())
+                .date(record.getDate())
+                .build()
+        );
     }
 }
