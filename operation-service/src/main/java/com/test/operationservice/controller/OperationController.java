@@ -1,5 +1,6 @@
 package com.test.operationservice.controller;
 
+import com.test.operationservice.dto.BalanceResponse;
 import com.test.operationservice.dto.OperationRequest;
 import com.test.operationservice.dto.OperationResponse;
 import com.test.operationservice.dto.PaginationRecordRequest;
@@ -65,6 +66,12 @@ public class OperationController {
                         .term(term)
                         .build();
         return recordService.search(username, paginationRecordRequest);
+    }
+
+    @GetMapping("/records/balance")
+    @ResponseStatus(HttpStatus.OK)
+    public BalanceResponse getCurrentBalance(@RequestHeader("X-Username") String username) {
+        return recordService.getCurrentBalance(username);
     }
 
     @PatchMapping("/records/{id}")

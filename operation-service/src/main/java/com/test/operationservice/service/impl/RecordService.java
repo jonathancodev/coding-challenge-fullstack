@@ -1,6 +1,7 @@
 package com.test.operationservice.service.impl;
 
 import com.test.operationservice.client.UserClient;
+import com.test.operationservice.dto.BalanceResponse;
 import com.test.operationservice.dto.CreateRecordRequest;
 import com.test.operationservice.dto.PaginationRecordRequest;
 import com.test.operationservice.dto.RecordResponse;
@@ -9,6 +10,7 @@ import com.test.operationservice.mapper.RecordMapper;
 import com.test.operationservice.model.Record;
 import com.test.operationservice.repository.RecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,9 @@ public class RecordService {
     private final RecordMapper recordMapper;
     private final UserClient userClient;
     private final MessageSource messageSource;
+
+    @Value("${default.user.balance}")
+    private Double defaultUserBalance;
 
     @Transactional
     public RecordResponse create(CreateRecordRequest createRecordRequest) {
@@ -66,6 +71,19 @@ public class RecordService {
                 .amount(record.getOperation().getCost())
                 .operationResponse(record.getOperationResponse())
                 .date(record.getDate())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public BalanceResponse getCurrentBalance(String username) {
+        var user = userClient.findByUsername(username);
+        if (user == null) throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
+        var balance = defaultUserBalance;
+        RecordResponse lastRecord = findLastRecordByUserId(user.id());
+        if (lastRecord != null) balance = lastRecord.userBalance();
+        return BalanceResponse
+                .builder()
+                .balance(balance)
                 .build();
     }
 

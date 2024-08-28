@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleRuntimeException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(ErrorResponse.builder().message(e.getMessage()).build());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.builder().message(e.getMessage()).build());

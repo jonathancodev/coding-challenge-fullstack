@@ -12,7 +12,6 @@ import com.test.operationservice.enums.RecordStatus;
 import com.test.operationservice.enums.UserStatus;
 import com.test.operationservice.factory.impl.CalculatorOperationFactory;
 import com.test.operationservice.factory.impl.StringOperationFactory;
-import com.test.operationservice.mapper.OperationMapper;
 import com.test.operationservice.model.Operation;
 import com.test.operationservice.repository.OperationRepository;
 import com.test.operationservice.service.CalculatorOperation;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class OperationService {
     private final OperationRepository operationRepository;
-    private final OperationMapper operationMapper;
     private final CalculatorOperationFactory calculatorOperationFactory;
     private final StringOperationFactory stringOperationFactory;
     private final UserClient userClient;
@@ -56,44 +54,49 @@ public class OperationService {
 
     @Transactional
     public ResultOperationResponse execute(String username, OperationRequest operationRequest) {
-        //TODO Idempotency: we can check if transaction is already started in server memory,
-        // however it has to store and check into a memory DB(Redis), when we have many replicas of the backend
-        if (!activeTransactions.add(operationRequest.transactionId())) {
-            throw new IllegalStateException(messageSource.getMessage("transaction.already.started", null, null));
+        try {
+            //TODO Idempotency: we can check if transaction is already started in server memory,
+            // however it has to store and check into a memory DB(Redis), when we have many replicas of the backend
+            if (!activeTransactions.add(operationRequest.transactionId())) {
+                throw new IllegalStateException(messageSource.getMessage("transaction.already.started", null, null));
+            }
+
+            var user = userClient.findByUsername(username);
+            if (user == null)
+                throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
+
+            var userBalance = defaultUserBalance;
+            RecordResponse lastRecord = recordService.findLastRecordByUserId(user.id());
+            if (lastRecord != null) userBalance = lastRecord.userBalance();
+
+            Operation operation = operationRepository.findByOperationType(operationRequest.operationType()).orElseThrow(() -> new IllegalArgumentException(messageSource.getMessage("operation.not.found", null, null)));
+            userValidation(user, userBalance, operation.getCost());
+            String operationResponse;
+
+            if (operationRequest.operationType() != OperationType.RANDOM_STRING) {
+                CalculatorOperation calculatorOperation = calculatorOperationFactory.getOperation(operationRequest.operationType());
+                operationResponse = String.valueOf(calculatorOperation.calculate(operationRequest.operands()));
+            } else {
+                StringOperation stringOperation = stringOperationFactory.getOperation(operationRequest.operationType());
+                operationResponse = stringOperation.generate();
+            }
+
+            CreateRecordRequest createRecordRequest = CreateRecordRequest.builder()
+                    .transactionId(operationRequest.transactionId())
+                    .status(RecordStatus.ACTIVE)
+                    .operation(operation)
+                    .userId(user.id())
+                    .amount(operation.getCost())
+                    .userBalance(userBalance - operation.getCost())
+                    .operationResponse(operationResponse)
+                    .build();
+
+            recordService.create(createRecordRequest);
+
+            return ResultOperationResponse.builder().result(operationResponse).build();
+        } finally {
+            activeTransactions.remove(operationRequest.transactionId());
         }
-
-        var user = userClient.findByUsername(username);
-        if (user == null) throw new IllegalArgumentException(messageSource.getMessage("user.not.found", null, null));
-
-        var userBalance = defaultUserBalance;
-        RecordResponse lastRecord = recordService.findLastRecordByUserId(user.id());
-        if (lastRecord != null) userBalance = lastRecord.userBalance();
-
-        Operation operation = operationRepository.findByOperationType(operationRequest.operationType()).orElseThrow(() -> new IllegalArgumentException(messageSource.getMessage("operation.not.found", null, null)));
-        userValidation(user, userBalance, operation.getCost());
-        String operationResponse;
-
-        if (operationRequest.operationType() != OperationType.RANDOM_STRING) {
-            CalculatorOperation calculatorOperation = calculatorOperationFactory.getOperation(operationRequest.operationType());
-            operationResponse = String.valueOf(calculatorOperation.calculate(operationRequest.operands()));
-        } else {
-            StringOperation stringOperation = stringOperationFactory.getOperation(operationRequest.operationType());
-            operationResponse = stringOperation.generate();
-        }
-
-        CreateRecordRequest createRecordRequest = CreateRecordRequest.builder()
-                .transactionId(operationRequest.transactionId())
-                .status(RecordStatus.ACTIVE)
-                .operation(operation)
-                .userId(user.id())
-                .amount(operation.getCost())
-                .userBalance(userBalance - operation.getCost())
-                .operationResponse(operationResponse)
-                .build();
-
-        recordService.create(createRecordRequest);
-
-        return ResultOperationResponse.builder().result(operationResponse).build();
     }
 
     private void userValidation(UserResponse user, double userBalance, double cost) {

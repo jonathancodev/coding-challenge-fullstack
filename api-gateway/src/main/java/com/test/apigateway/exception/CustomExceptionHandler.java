@@ -7,16 +7,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleRuntimeException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(ErrorResponse.builder().message(e.getMessage()).build());
     }
 

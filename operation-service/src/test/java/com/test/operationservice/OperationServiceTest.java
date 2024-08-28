@@ -11,7 +11,6 @@ import com.test.operationservice.enums.OperationType;
 import com.test.operationservice.enums.UserStatus;
 import com.test.operationservice.factory.impl.CalculatorOperationFactory;
 import com.test.operationservice.factory.impl.StringOperationFactory;
-import com.test.operationservice.mapper.OperationMapper;
 import com.test.operationservice.model.Operation;
 import com.test.operationservice.repository.OperationRepository;
 import com.test.operationservice.service.impl.AdditionOperationService;
@@ -51,9 +50,6 @@ class OperationServiceTest {
 	private OperationRepository operationRepository;
 
 	@Mock
-	private OperationMapper operationMapper;
-
-	@Mock
 	private CalculatorOperationFactory calculatorOperationFactory;
 
 	@Mock
@@ -70,9 +66,14 @@ class OperationServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		operationService = new OperationService(operationRepository, operationMapper,
-				calculatorOperationFactory, stringOperationFactory, userClient,
-				recordService, messageSource);
+		operationService = new OperationService(
+				operationRepository,
+				calculatorOperationFactory,
+				stringOperationFactory,
+				userClient,
+				recordService,
+				messageSource
+		);
 	}
 
 	@Test
