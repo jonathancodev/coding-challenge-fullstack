@@ -1,6 +1,7 @@
 package com.test.operationservice;
 
 import com.test.operationservice.client.UserClient;
+import com.test.operationservice.dto.BalanceResponse;
 import com.test.operationservice.dto.CreateRecordRequest;
 import com.test.operationservice.dto.PaginationRecordRequest;
 import com.test.operationservice.dto.RecordResponse;
@@ -58,6 +59,7 @@ class RecordServiceTest {
 	private static final String DEFAULT_USERNAME = "testuser";
 	private static final Long DEFAULT_USER_ID = 1L;
 	private static final Long DEFAULT_RECORD_ID = 1L;
+	private static final Double DEFAULT_USER_BALANCE = 10.0;
 
 	@BeforeEach
 	void setUp() {
@@ -182,6 +184,44 @@ class RecordServiceTest {
 		assertEquals(1, result.getTotalElements());
 		assertEquals(recordResponse, result.getContent().get(0));
 		verify(recordRepository).search(paginationRecordRequest.term(), DEFAULT_USER_ID, pageable);
+	}
+
+	@Test
+	void getCurrentBalance_UserNotFound_ThrowsException() {
+		when(userClient.findByUsername(DEFAULT_USERNAME)).thenReturn(null);
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			recordService.getCurrentBalance(DEFAULT_USERNAME);
+		});
+
+		assertEquals(messageSource.getMessage("user.not.found", null, Locale.ENGLISH), exception.getMessage());
+	}
+
+	@Test
+	void getCurrentBalance_NoLastRecord_ReturnsDefaultBalance() {
+		UserResponse userResponse = UserResponse.builder().id(DEFAULT_USER_ID).username(DEFAULT_USERNAME).build();
+		when(userClient.findByUsername(DEFAULT_USERNAME)).thenReturn(userResponse);
+		when(recordRepository.findFirstByUserIdOrderByDateDesc(userResponse.id())).thenReturn(Optional.empty());
+
+		BalanceResponse response = recordService.getCurrentBalance(DEFAULT_USERNAME);
+
+		assertEquals(null, response.balance());
+	}
+
+	@Test
+	void getCurrentBalance_LastRecordFound_ReturnsLastRecordBalance() {
+		UserResponse userResponse = UserResponse.builder().id(DEFAULT_USER_ID).username(DEFAULT_USERNAME).build();
+		Record record = Record
+				.builder()
+				.operation(Operation.builder().operationType(OperationType.ADDITION).build())
+				.userBalance(DEFAULT_USER_BALANCE)
+				.build();
+		when(userClient.findByUsername(DEFAULT_USERNAME)).thenReturn(userResponse);
+		when(recordRepository.findFirstByUserIdOrderByDateDesc(userResponse.id())).thenReturn(Optional.of(record));
+
+		BalanceResponse response = recordService.getCurrentBalance(DEFAULT_USERNAME);
+
+		assertEquals(DEFAULT_USER_BALANCE, response.balance());
 	}
 }
 

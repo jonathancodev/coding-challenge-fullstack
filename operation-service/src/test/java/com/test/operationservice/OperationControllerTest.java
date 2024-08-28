@@ -1,6 +1,7 @@
 package com.test.operationservice;
 
 import com.test.operationservice.controller.OperationController;
+import com.test.operationservice.dto.BalanceResponse;
 import com.test.operationservice.dto.OperationRequest;
 import com.test.operationservice.dto.OperationResponse;
 import com.test.operationservice.dto.PaginationRecordRequest;
@@ -48,6 +49,7 @@ class OperationControllerTest {
 	private static final String DEFAULT_USERNAME = "testuser";
 	private static final String DEFAULT_TRANSACTION_ID = "testtransaction";
 	private static final OperationType DEFAULT_OPERATION_TYPE = OperationType.ADDITION;
+	private static final Double DEFAULT_USER_BALANCE = 10.0;
 
 	@Test
 	void findAll_ShouldReturnEmptyList() throws Exception {
@@ -295,6 +297,39 @@ class OperationControllerTest {
 		mockMvc.perform(patch("/api/v1/operations/records/{id}", "")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void getCurrentBalance_UsernameHeaderRequired_ShouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/api/v1/operations/records/balance")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(status().reason("Required header 'X-Username' is not present."));
+	}
+
+	@Test
+	void getCurrentBalance_ShouldReturnDefaultBalance() throws Exception {
+		BalanceResponse balanceResponse = BalanceResponse.builder().balance(DEFAULT_USER_BALANCE).build();
+		when(recordService.getCurrentBalance(DEFAULT_USERNAME)).thenReturn(balanceResponse);
+
+		mockMvc.perform(get("/api/v1/operations/records/balance")
+						.header("X-Username", DEFAULT_USERNAME)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json("{\"balance\":" + DEFAULT_USER_BALANCE + "}"));
+	}
+
+	@Test
+	void getCurrentBalance_ShouldReturnBalanceFromLastRecord() throws Exception {
+		Double lastRecordBalance = 5.4;
+		BalanceResponse balanceResponse = BalanceResponse.builder().balance(lastRecordBalance).build();
+		when(recordService.getCurrentBalance(DEFAULT_USERNAME)).thenReturn(balanceResponse);
+
+		mockMvc.perform(get("/api/v1/operations/records/balance")
+						.header("X-Username", DEFAULT_USERNAME)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json("{\"balance\":" + lastRecordBalance + "}"));
 	}
 }
 
