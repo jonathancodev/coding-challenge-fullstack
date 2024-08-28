@@ -20,3 +20,29 @@ services:
     volumes:
       - ./data/mysql-operation:/var/lib/mysql
       - ./docker/mysql-operation/init.sql:/docker-entrypoint-initdb.d/init.sql
+  user-service:
+    image: coding-challenge-fullstack-user-service:latest
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-user
+    links:
+      - mysql-user
+  operation-service:
+    image: coding-challenge-fullstack-operation-service:latest
+    container_name: operation-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql-operation
+    links:
+      - mysql-operation
+  api-gateway:
+    image: coding-challenge-fullstack-api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "9000:9000"
+    links:
+      - user-service
+      - operation-service
