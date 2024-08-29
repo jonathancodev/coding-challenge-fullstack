@@ -22,5 +22,10 @@ public class AuthController {
         String token = authService.login(loginRequest.username(), loginRequest.password());
         return ResponseEntity.ok(new LoginResponse(token));
     }
+
+    @GetMapping("/health-check")
+    public ResponseEntity<String> healthCheck() {
+        return ResponseEntity.ok("Ok");
+    }
 }
 
