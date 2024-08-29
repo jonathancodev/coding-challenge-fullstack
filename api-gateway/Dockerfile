@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . /app
 EXPOSE 9000
 RUN mvn clean package
-CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Xms1024m -Xmx2048m"]
+CMD ["mvn", "spring-boot:run"]
